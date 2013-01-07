@@ -1,0 +1,91 @@
+import java.util.Arrays;
+
+public class CalculateValue {
+	public static int Calculate(Card[] sortedTable) {
+		int highestCardInHand;
+		Boolean pair = false, twoPair = false, threeOfAKind = false, straight = false, flush = false, fullHouse = false, straightFlush = false, fourOfAKind = false, royal = false;
+
+		// Checks for pairs
+		// PairID is used to check for duplicates.
+		int PairID = 0;
+		// PairCount used to check for 2 pair.
+		int pairCount = 0;
+		
+		for (int x = 0; x < 7; x++) {
+			int sameCards = 1;
+			while (!(x==6) && sortedTable[x].getValueInt() == sortedTable[x + 1]
+					.getValueInt()) {
+				sameCards++;
+				x++;
+			}
+		
+			switch (sameCards) {
+			// High card
+			case 1:
+				if (!pair && !threeOfAKind && !fourOfAKind
+						|| !(PairID == sortedTable[x].getValueInt())) {
+					PairID = sortedTable[x].getValueInt();					
+				}
+				break;
+			// Pair
+			case 2:
+				if (!threeOfAKind && !fourOfAKind
+						|| !(PairID == sortedTable[x].getValueInt())) {
+					PairID = sortedTable[x].getValueInt();
+				}
+				pairCount++;
+				pair = true;
+				break;
+			// 3 of a kind
+			case 3:
+				if (!fourOfAKind || !(PairID == sortedTable[x].getValueInt())) {
+					PairID = sortedTable[x].getValueInt();
+				}
+				threeOfAKind = true;
+				break;
+			case 4:
+				// 4 of a kind
+				PairID = sortedTable[x].getValueInt();
+				fourOfAKind = true;
+				break;
+			}
+		}
+		//Two pair
+		if (pairCount<1){
+			twoPair = true;
+		}
+		//Full House
+		if (threeOfAKind && pair) {
+			fullHouse = true;
+		}
+		// Checks for straights
+		for (int x = 0; x < 7; x++) {
+			int straightCounter = 0;
+			while (sortedTable[x].getValueInt() + 1 == sortedTable[x + 1]
+					.getValueInt()) {
+				straightCounter++;
+			}
+			if (straightCounter >= 5) {
+				straight = true;
+				highestCardInHand = sortedTable[x + 4].getValueInt();
+			}
+		}
+
+		// Sorts hand by suit
+		Card.compareBySuit(true);
+		Arrays.sort(sortedTable);
+		Card.compareBySuit(false);
+		//Checks for flushes
+		for (int x = 0; x < 7; x++) {
+			int flushCounter = 0;
+			while (sortedTable[x].getSuitID() == sortedTable[x + 1].getSuitID()) {
+				flushCounter++;
+			}
+			if (flushCounter >= 5) {
+				flush = true;
+				highestCardInHand = sortedTable[x + 4].getValueInt();
+			}
+		}
+		return (Integer) null;
+	}
+}
